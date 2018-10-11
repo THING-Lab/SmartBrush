@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/Ardity/Scenes/DemoScene_UserPoll_ReadWrite.unity
+  isLoaded: 1
+  isActive: 1
