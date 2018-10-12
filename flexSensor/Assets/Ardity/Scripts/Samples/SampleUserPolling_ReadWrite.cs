@@ -14,14 +14,15 @@ using System.Collections;
  */
 public class SampleUserPolling_ReadWrite : MonoBehaviour
 {
+
+
+    static public float FS_A, FS_B, FS_C, FS_D, FS_E, FS_F;
     public SerialController serialController;
 
     // Initialization
     void Start()
     {
         serialController = GameObject.Find("SerialController").GetComponent<SerialController>();
-
-        Debug.Log("Press A or Z to execute some actions");
     }
 
     // Executed each frame
@@ -31,50 +32,24 @@ public class SampleUserPolling_ReadWrite : MonoBehaviour
         // Send data
         //---------------------------------------------------------------------
 
-        // If you press one of these keys send it to the serial device. A
-        // sample serial device that accepts this input is given in the README.
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            Debug.Log("Sending A");
-            serialController.SendSerialMessage("A");
-        }
+        serialController.SendSerialMessage("A");
+        receiveMessage();
+        serialController.SendSerialMessage("B");
+        receiveMessage();
+        serialController.SendSerialMessage("C");
+        receiveMessage();
+        serialController.SendSerialMessage("D");
+        receiveMessage();
+        serialController.SendSerialMessage("E");
+        receiveMessage();
+        serialController.SendSerialMessage("F");
+        receiveMessage();
+        receiveMessage();
 
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            Debug.Log("Sending B");
-            serialController.SendSerialMessage("B");
-        }
+    }
 
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            Debug.Log("Sending C");
-            serialController.SendSerialMessage("C");
-        }
-
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            Debug.Log("Sending D");
-            serialController.SendSerialMessage("D");
-        }
-
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            Debug.Log("Sending E");
-            serialController.SendSerialMessage("E");
-        }
-
-
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            Debug.Log("Sending F");
-            serialController.SendSerialMessage("F");
-        }
-
-
-        //---------------------------------------------------------------------
-        // Receive data
-        //---------------------------------------------------------------------
-
+    public void receiveMessage()
+    {
         string message = serialController.ReadSerialMessage();
 
         if (message == null)
@@ -86,6 +61,39 @@ public class SampleUserPolling_ReadWrite : MonoBehaviour
         else if (ReferenceEquals(message, SerialController.SERIAL_DEVICE_DISCONNECTED))
             Debug.Log("Connection attempt failed or disconnection detected");
         else
-            Debug.Log("Message arrived: " + message);
+            changeBend(message);
+    }
+
+    public void changeBend(string dataString)
+    {
+        char bristleID = dataString[0];
+        string degree = dataString.Remove(0, 1);
+        switch (bristleID)
+        {
+            case 'A':
+                FS_A = int.Parse(degree);
+                bendPointA.changep1Pos = FS_A;
+                break;
+            case 'B':
+                FS_B = int.Parse(degree);
+                bendPointB.changep1Pos = FS_B;
+                break;
+            case 'C':
+                FS_C = int.Parse(degree);
+                bendPointC.changep1Pos = FS_C;
+                break;
+            case 'D':
+                FS_D = int.Parse(degree);
+                bendPointD.changep1Pos = FS_D;
+                break;
+            case 'E':
+                FS_E = int.Parse(degree);
+                bendPointE.changep1Pos = FS_E;
+                break;
+            case 'F':
+                FS_F = int.Parse(degree);
+                bendPointF.changep1Pos = FS_F;
+                break;
+        }
     }
 }

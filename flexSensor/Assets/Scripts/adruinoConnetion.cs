@@ -103,8 +103,6 @@ public class adruinoConnetion : MonoBehaviour {
 
                 break;
         }
-
-
     }
 
     public void openPort()

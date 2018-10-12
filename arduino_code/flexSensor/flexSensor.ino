@@ -15,6 +15,8 @@ float angle;
 const float STRAIGHT_RESISTANCE = 30000.0; // resistance when straight
 const float BEND_RESISTANCE = 90000.0; // resistance at 90 deg
 
+unsigned long last_time = 0;
+
 void setup() 
 {
   Serial.begin(9600);
@@ -23,25 +25,53 @@ void setup()
   pinMode(FLEX_2, INPUT);
   pinMode(FLEX_3, INPUT);
   pinMode(FLEX_4, INPUT);
- // pinMode(FLEX_5, INPUT);
+  pinMode(FLEX_5, INPUT);
 }
 
-void loop() 
+void loop()
 {
-  flexAngle(FLEX_0, 'A');
-  flexAngle(FLEX_1, 'B');
-  flexAngle(FLEX_2, 'C');
-  flexAngle(FLEX_3, 'D');
-  flexAngle(FLEX_4, 'E');
-  //flexAngle(FLEX_5, 'F');
-  }
+    // Print a heartbeat
+    if (millis() > last_time + 2000)
+    {
+        //Serial.println("Arduino is alive!!");
+        last_time = millis();
+    }
 
+    // Send some message when I receive an 'A' or a 'Z'.
+    switch (Serial.read())
+    {
+        case 'A':
+            Serial.println("A" + String(analogRead(FLEX_0))); 
+            break;
+            
+        case 'B':
+            Serial.println("B" + String(analogRead(FLEX_1))); 
+            break;
+
+        case 'C':
+            Serial.println("C" + String(analogRead(FLEX_2))); 
+            break;
+
+        case 'D':
+            Serial.println("D" + String(analogRead(FLEX_3))); 
+            break;
+            
+        case 'E':
+            Serial.println("E" + String(analogRead(FLEX_4))); 
+            break;
+            
+        case 'F':
+            Serial.println("F" + String(analogRead(FLEX_5))); 
+            break;
+    }
+}
+
+
+/*
 void flexAngle(int sensor, char letter){
   flexADC = analogRead(sensor);
   flexV = flexADC * VCC / 1023.0;
   flexR = R * (VCC / flexV - 1.0);
   angle = map(flexR, STRAIGHT_RESISTANCE, BEND_RESISTANCE,0, 90.0);
-  Serial.println(letter + String(angle));
-  Serial.println();
-  delay(250);  
-}
+  Serial.println(letter + String(angle)); 
+}*/
