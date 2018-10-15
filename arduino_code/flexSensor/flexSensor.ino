@@ -5,18 +5,6 @@ const int FLEX_3 = A3;
 const int FLEX_4 = A4;
 const int FLEX_5 = A5;
 
-const float VCC = 4.98; 
-const float R = 56000.0; 
-int flexADC;
-float flexV;
-float flexR;
-float angle;
-
-const float STRAIGHT_RESISTANCE = 30000.0; // resistance when straight
-const float BEND_RESISTANCE = 90000.0; // resistance at 90 deg
-
-unsigned long last_time = 0;
-
 void setup() 
 {
   Serial.begin(9600);
@@ -30,13 +18,6 @@ void setup()
 
 void loop()
 {
-    // Print a heartbeat
-    if (millis() > last_time + 2000)
-    {
-        //Serial.println("Arduino is alive!!");
-        last_time = millis();
-    }
-
     // Send some message when I receive an 'A' or a 'Z'.
     switch (Serial.read())
     {
@@ -65,13 +46,3 @@ void loop()
             break;
     }
 }
-
-
-/*
-void flexAngle(int sensor, char letter){
-  flexADC = analogRead(sensor);
-  flexV = flexADC * VCC / 1023.0;
-  flexR = R * (VCC / flexV - 1.0);
-  angle = map(flexR, STRAIGHT_RESISTANCE, BEND_RESISTANCE,0, 90.0);
-  Serial.println(letter + String(angle)); 
-}*/
