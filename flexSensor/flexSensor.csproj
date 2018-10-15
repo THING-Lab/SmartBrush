@@ -320,7 +320,6 @@
     <Compile Include="Assets\Ardity\Scripts\Threads\SerialThread.cs" />
     <Compile Include="Assets\Ardity\Scripts\Threads\SerialThreadCustomDelimiter.cs" />
     <Compile Include="Assets\Ardity\Scripts\Threads\SerialThreadLines.cs" />
-    <Compile Include="Assets\Scripts\adruinoConnetion.cs" />
     <Compile Include="Assets\Scripts\bendPoint.cs" />
     <Compile Include="Assets\Scripts\bendPointA.cs" />
     <Compile Include="Assets\Scripts\bendPointB.cs" />
@@ -329,6 +328,7 @@
     <Compile Include="Assets\Scripts\bendPointE.cs" />
     <Compile Include="Assets\Scripts\bendPointF.cs" />
     <Compile Include="Assets\Scripts\bendScriptScrap.cs" />
+    <Compile Include="Assets\Scripts\BrushSensorPolling.cs" />
     <Compile Include="Assets\Scripts\lineBezier.cs" />
   </ItemGroup>
   <ItemGroup>
