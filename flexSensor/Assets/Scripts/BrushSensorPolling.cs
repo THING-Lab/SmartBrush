@@ -68,6 +68,7 @@ public class BrushSensorPolling : MonoBehaviour
 
     private float getBristleAngle (int bristleID) {
         float bend = currentBristleBend[bristleID] - bristleCalibrationBend[bristleID];
+
         bend /= 10;
         return bend;
     }

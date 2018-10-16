@@ -7,6 +7,11 @@
  */
 
 using UnityEngine;
+
+using System;
+using System.IO;
+using System.IO.Ports;
+using System.Collections;
 using System.Threading;
 
 /**
@@ -23,6 +28,8 @@ using System.Threading;
  * on the integrity of the message. It's up to the one that makes sense of the
  * data.
  */
+
+
 public class SerialController : MonoBehaviour
 {
     [Tooltip("Port name with which the SerialPort object will be created.")]
@@ -54,6 +61,9 @@ public class SerialController : MonoBehaviour
     // Internal reference to the Thread and the object that runs in it.
     protected Thread thread;
     protected SerialThreadLines serialThread;
+
+    // Object from the .Net framework used to communicate with serial devices.
+    private SerialPort serialPort;
 
 
     // ------------------------------------------------------------------------
@@ -124,6 +134,12 @@ public class SerialController : MonoBehaviour
             messageListener.SendMessage("OnConnectionEvent", false);
         else
             messageListener.SendMessage("OnMessageArrived", message);
+
+    }
+    private void OnApplicationQuit()
+    {
+        OnDisable();
+        CloseDevice();
     }
 
     // ------------------------------------------------------------------------
@@ -155,5 +171,22 @@ public class SerialController : MonoBehaviour
     {
         this.userDefinedTearDownFunction = userFunction;
     }
+    // ------------------------------------------------------------------------
+    // Release any resource used, and don't fail in the attempt.
+    // ------------------------------------------------------------------------
+    private void CloseDevice()
+    {
+        if (serialPort == null)
+            return;
+        try
+        {
+            serialPort.Close();
+        }
+        catch (IOException)
+        {
+            // Nothing to do, not a big deal, don't try to cleanup any further.
+        }
 
+        serialPort = null;
+    }
 }
