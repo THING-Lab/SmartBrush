@@ -20,6 +20,7 @@ public class BrushSensorPolling : MonoBehaviour
     private int [] currentBristleBend = { 600, 600, 600, 600, 600, 600 };
     public float bristleAngleScalefactor = 0.1f;
     public float bristleNegativeThreshold = 0.2f;
+    public float bendThreshold = 2;
 
     // Initialization
     void Start()
@@ -142,11 +143,11 @@ public class BrushSensorPolling : MonoBehaviour
         float bend = getBristleAngle(bristleID);
         float neighborBend = getBristleAngle(neighborID);
 
-        if (bristleID % 2 == 0 && bend <= -2 && neighborBend <= -2)
+        if (bristleID % 2 == 0 && bend <= -bendThreshold && neighborBend <= -bendThreshold)
         {
              bend = neighborBend;
         }
-         if (bristleID % 2 != 0 && bend >= 2 && neighborBend >= 2)
+         if (bristleID % 2 != 0 && bend >= bendThreshold && neighborBend >= bendThreshold)
         {
              bend = neighborBend;
         }
