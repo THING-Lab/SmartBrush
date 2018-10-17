@@ -15,9 +15,11 @@ using System.Collections;
 public class BrushSensorPolling : MonoBehaviour
 {
     public SerialController serialController;
-
-    private int[] bristleCalibrationBend = { 600, 600, 600, 600, 600, 600 };
-    private int[] currentBristleBend = { 600, 600, 600, 600, 600, 600 };
+    
+    private int [] bristleCalibrationBend = {600, 600, 600, 600, 600, 600 };
+    private int [] currentBristleBend = { 600, 600, 600, 600, 600, 600 };
+    public float bristleAngleScalefactor = 0.1f;
+    public float bristleNegativeThreshold = 0.2f;
 
     // Initialization
     void Start()
@@ -65,13 +67,14 @@ public class BrushSensorPolling : MonoBehaviour
             parseArduinoMessage(message);
     }
 
-    private float getBristleAngle(int bristleID) {
 
-        float bend = currentBristleBend[bristleID] - bristleCalibrationBend[bristleID];
-        bend /= 10;
-        if (bristleID % 2 == 0)
-            bend = -bend;
-
+    private float getBristleAngle (int bristleID) {
+        float bend = bristleCalibrationBend[bristleID] - currentBristleBend[bristleID];
+        bend *= bristleAngleScalefactor; // multiply with the scale factor
+        if (bristleID % 2 == 1)
+        {
+            return -bend;
+        }
         return bend;
     }
 
@@ -87,8 +90,8 @@ public class BrushSensorPolling : MonoBehaviour
         GameObject bristle;
 
         for (int i = 0; i < 6; i++) {
-            // select the right game object.
-            switch (i)
+            
+            switch (i) // select the right game object bristle by it's name in the scene.
             {
                 case 0: bristle = GameObject.Find("/SmartBrush/Bristle_A"); break;
                 case 1: bristle = GameObject.Find("/SmartBrush/Bristle_B"); break;
@@ -103,6 +106,30 @@ public class BrushSensorPolling : MonoBehaviour
             bristle.transform.Translate(2, 0, 0);
             bristle.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
             bristle.transform.Translate(-2, 0, 0);
+//=======
+
+//            float angle = getBristleAngle(i);
+//            //Debug.Log(i +": Angle " + angle);
+//            if (i % 2 == 1) // we treat even and odd brisles differently, as they are mounted flipped
+//            {
+//                if (angle > bristleNegativeThreshold) // if the bristle is bent in the direction that the sensor is not reacting to
+//                {
+//                    angle = getBristleAngle(i - 1); // just take the value of the neighboring paired bristle
+//                }
+
+//            }
+//            else
+//            {
+//                if (angle < -bristleNegativeThreshold)  // if the bristle is bent in the direction that the sensor is not reacting to
+//                {
+//                    angle = getBristleAngle(i + 1); // just take the value of the neighboring paired bristle
+//                }
+//            }
+
+//            bristle.transform.Translate(2, 0, 0); // transform so that it rotates around the right point
+//            bristle.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle)); // apply rotation
+//            bristle.transform.Translate(-2, 0, 0); // transform back
+//>>>>>>> origin/master
         }
     }
     private float backBend (int bristleID) {
