@@ -16,8 +16,8 @@ public class BrushSensorPolling : MonoBehaviour
 {
     public SerialController serialController;
 
-    private int [] bristleCalibrationBend = {600, 600, 600, 600, 600, 600 };
-    private int [] currentBristleBend = { 600, 600, 600, 600, 600, 600 };
+    private int[] bristleCalibrationBend = { 600, 600, 600, 600, 600, 600 };
+    private int[] currentBristleBend = { 600, 600, 600, 600, 600, 600 };
 
     // Initialization
     void Start()
@@ -53,7 +53,6 @@ public class BrushSensorPolling : MonoBehaviour
     public void receiveMessage()
     {
         string message = serialController.ReadSerialMessage();
-
         if (message == null)
             return;
 
@@ -66,10 +65,13 @@ public class BrushSensorPolling : MonoBehaviour
             parseArduinoMessage(message);
     }
 
-    private float getBristleAngle (int bristleID) {
-        float bend = currentBristleBend[bristleID] - bristleCalibrationBend[bristleID];
+    private float getBristleAngle(int bristleID) {
 
+        float bend = currentBristleBend[bristleID] - bristleCalibrationBend[bristleID];
         bend /= 10;
+        if (bristleID % 2 == 0)
+            bend = -bend;
+
         return bend;
     }
 
@@ -93,18 +95,38 @@ public class BrushSensorPolling : MonoBehaviour
                 case 2: bristle = GameObject.Find("/SmartBrush/Bristle_C"); break;
                 case 3: bristle = GameObject.Find("/SmartBrush/Bristle_D"); break;
                 case 4: bristle = GameObject.Find("/SmartBrush/Bristle_E"); break;
-                default: bristle = GameObject.Find("/SmartBrush/Bristle_F"); break;
+                case 5: bristle = GameObject.Find("/SmartBrush/Bristle_F"); break;
+                default: bristle = GameObject.Find(""); break;
             }
-
-            float angle = getBristleAngle(i);
-            if (i == 0 || i == 2 || i == 4)
-                angle = -angle;
+            float angle = backBend(i);
             
             bristle.transform.Translate(2, 0, 0);
             bristle.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
             bristle.transform.Translate(-2, 0, 0);
         }
     }
+    private float backBend (int bristleID) {
+        int neighborID = 0;
+        if (bristleID % 2 == 0)
+            neighborID = bristleID + 1;
+        else
+            neighborID = bristleID - 1;
+
+        float bend = getBristleAngle(bristleID);
+        float neighborBend = getBristleAngle(neighborID);
+
+        if (bristleID % 2 == 0 && bend <= -2 && neighborBend <= -2)
+        {
+             bend = neighborBend;
+        }
+         if (bristleID % 2 != 0 && bend >= 2 && neighborBend >= 2)
+        {
+             bend = neighborBend;
+        }
+
+        return bend;
+    }
+
 
     private void parseArduinoMessage(string dataString)
     {
