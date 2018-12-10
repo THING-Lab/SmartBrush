@@ -15,6 +15,8 @@ using System.Collections;
 public class BrushSensorPolling : MonoBehaviour
 {
     public SerialController serialController;
+
+    public GameObject Brush, bristle_A, bristle_B, bristle_C, bristle_D, bristle_E, bristle_F;
     
     private int [] bristleCalibrationBend = {600, 600, 600, 600, 600, 600 };
     private int [] currentBristleBend = { 600, 600, 600, 600, 600, 600 };
@@ -26,6 +28,16 @@ public class BrushSensorPolling : MonoBehaviour
     void Start()
     {
         serialController = GameObject.Find("SerialController").GetComponent<SerialController>();
+        Brush = GameObject.FindWithTag("Brush");
+        bristle_A = GameObject.FindWithTag("Bristle_A");
+        bristle_B = GameObject.FindWithTag("Bristle_B");
+        bristle_C = GameObject.FindWithTag("Bristle_C");
+        bristle_D = GameObject.FindWithTag("Bristle_D");
+        bristle_E = GameObject.FindWithTag("Bristle_E");
+        bristle_F = GameObject.FindWithTag("Bristle_F");
+        
+        if(Brush == null)
+            Debug.Log("Brush Not Found!");
     }
 
     // Executed each frame
@@ -34,6 +46,18 @@ public class BrushSensorPolling : MonoBehaviour
         //---------------------------------------------------------------------
         // Send data
         //---------------------------------------------------------------------
+        if(Brush == null)
+            Debug.Log("Brush Not Found!");
+        if(bristle_A == null)
+            Debug.Log("Brush Not Found!");
+        
+        bristle_A.transform.localPosition = new Vector3 (-1.3f, -1.21f, 0);
+        bristle_B.transform.localPosition = new Vector3 (-1.3f, -0.76f, 0);
+        bristle_C.transform.localPosition = new Vector3 (-1.3f, -0.25f, 0);
+        bristle_D.transform.localPosition = new Vector3 (-1.3f, 0.25f, 0);
+        bristle_E.transform.localPosition = new Vector3 (-1.3f, 0.7f, 0);
+        bristle_F.transform.localPosition = new Vector3 (-1.3f, 1.12f, 0);
+
         if (Input.GetKeyDown(KeyCode.C))
         {
             setBristleCalibrationBend();
@@ -94,19 +118,20 @@ public class BrushSensorPolling : MonoBehaviour
             
             switch (i) // select the right game object bristle by it's name in the scene.
             {
-                case 0: bristle = GameObject.Find("/SmartBrush/Bristle_A"); break;
-                case 1: bristle = GameObject.Find("/SmartBrush/Bristle_B"); break;
-                case 2: bristle = GameObject.Find("/SmartBrush/Bristle_C"); break;
-                case 3: bristle = GameObject.Find("/SmartBrush/Bristle_D"); break;
-                case 4: bristle = GameObject.Find("/SmartBrush/Bristle_E"); break;
-                case 5: bristle = GameObject.Find("/SmartBrush/Bristle_F"); break;
-                default: bristle = GameObject.Find(""); break;
+                case 0: bristle = bristle_A;  break;
+                case 1: bristle = bristle_B;  break;
+                case 2: bristle = bristle_C;  break;
+                case 3: bristle = bristle_D;  break;
+                case 4: bristle = bristle_E;  break;
+                case 5: bristle = bristle_F;  break;
+                default: bristle = GameObject.FindWithTag("").gameObject; break;
             }
-            float angle = backBend(i);
-            
-            bristle.transform.Translate(2, 0, 0);
-            bristle.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
-            bristle.transform.Translate(-2, 0, 0);
+            if(bristle == null)
+                Debug.Log("Bristle Not Found!");
+            else{
+            float angle = backBend(i);      
+            bristle.transform.localRotation = Quaternion.Euler(new Vector3(0, angle, 0));
+            }
 //=======
 
 //            float angle = getBristleAngle(i);
