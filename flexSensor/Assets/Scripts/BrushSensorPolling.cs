@@ -131,6 +131,7 @@ public class BrushSensorPolling : MonoBehaviour
             else{
             float angle = backBend(i);      
             bristle.transform.localRotation = Quaternion.Euler(new Vector3(0, angle, 0));
+            //bristle.transform.RotateAround(Brush.transform.position, new Vector3(0, 1, 0), angle);
             }
 //=======
 
