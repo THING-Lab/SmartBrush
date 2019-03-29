@@ -11,6 +11,7 @@ using System.Collections;
 
 /**
  * Sample for reading using polling by yourself, and writing too.
+ * Built of off of Arduino Serial Reading Code Created by Daniel Wilches
  */
 public class BrushSensorPolling : MonoBehaviour
 {
