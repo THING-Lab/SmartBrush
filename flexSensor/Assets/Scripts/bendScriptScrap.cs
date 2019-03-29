@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+/*This Script is not used for VR Smart Brush see BrushSensorPolling
+    This Script just bends a mesh render around the correct axis*/
 public class bendScript : MonoBehaviour
 {
 
@@ -9,7 +10,7 @@ public class bendScript : MonoBehaviour
 
     public float rotate = 90;
     public float fromPosition = 0.5F; //from 0 to 1
-    public BendAxis axis = BendAxis.X;
+    public BendAxis axis = BendAxis.Y;
     Mesh mesh;
     Vector3[] vertices;
 

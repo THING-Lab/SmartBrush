@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/* Used for intial implementation but code is not 
+ * used nor necessary for current brush implementation
+ * but will keep in case we wish is make the bristles 
+ * have a sort of bend while painting */
 public class lineBezier : MonoBehaviour {
     public LineRenderer lineRend;
     public Transform point0, point1, point2;

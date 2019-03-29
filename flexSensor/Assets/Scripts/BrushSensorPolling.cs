@@ -27,8 +27,13 @@ public class BrushSensorPolling : MonoBehaviour
     // Initialization
     void Start()
     {
+        //Make sure SerialContoller Game object is in Hirarchy and has SerialController Script attatched
+        //Also make sure Port name on script is correct Com Port fro the arduino
         serialController = GameObject.Find("SerialController").GetComponent<SerialController>();
+
+
         Brush = GameObject.FindWithTag("Brush");
+        //Find bristles to set location and rotation
         bristle_A = GameObject.FindWithTag("Bristle_A");
         bristle_B = GameObject.FindWithTag("Bristle_B");
         bristle_C = GameObject.FindWithTag("Bristle_C");
@@ -51,18 +56,21 @@ public class BrushSensorPolling : MonoBehaviour
         if(bristle_A == null)
             Debug.Log("Brush Not Found!");
         
-        bristle_A.transform.localPosition = new Vector3 (-1.3f, -1.21f, 0);
-        bristle_B.transform.localPosition = new Vector3 (-1.3f, -0.76f, 0);
-        bristle_C.transform.localPosition = new Vector3 (-1.3f, -0.25f, 0);
-        bristle_D.transform.localPosition = new Vector3 (-1.3f, 0.25f, 0);
-        bristle_E.transform.localPosition = new Vector3 (-1.3f, 0.7f, 0);
-        bristle_F.transform.localPosition = new Vector3 (-1.3f, 1.12f, 0);
-
-        if (Input.GetKeyDown(KeyCode.C))
+        //Set Burshs in the correct positin relative to their parent(Bristle_XP)
+        bristle_A.transform.localPosition = new Vector3 (-1.3f, 0f, 0);
+        bristle_B.transform.localPosition = new Vector3 (-1.3f, 0f, 0);
+        bristle_C.transform.localPosition = new Vector3 (-1.3f, 0f, 0);
+        bristle_D.transform.localPosition = new Vector3 (-1.3f, 0f, 0);
+        bristle_E.transform.localPosition = new Vector3 (-1.3f, 0f, 0);
+        bristle_F.transform.localPosition = new Vector3 (-1.3f, 0f, 0);
+        
+        //Set Bristles to Flat Position 
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             setBristleCalibrationBend();
         }
-
+        
+        //Pulling Data From Arduino Serial Port
         serialController.SendSerialMessage("A");
         receiveMessage();
         serialController.SendSerialMessage("B");
@@ -79,6 +87,7 @@ public class BrushSensorPolling : MonoBehaviour
 
     public void receiveMessage()
     {
+        //Pulls data from serial command line of arduino
         string message = serialController.ReadSerialMessage();
         if (message == null)
             return;
@@ -94,6 +103,7 @@ public class BrushSensorPolling : MonoBehaviour
 
 
     private float getBristleAngle (int bristleID) {
+        //Calculate how far to bent the Bristles based on Flexsensor values
         float bend = bristleCalibrationBend[bristleID] - currentBristleBend[bristleID];
         bend *= bristleAngleScalefactor; // multiply with the scale factor
         if (bristleID % 2 == 1)
@@ -105,6 +115,7 @@ public class BrushSensorPolling : MonoBehaviour
 
     private void setBristleCalibrationBend()
     {
+        //Calibrating bristles to a set starting position
         for (int i = 0; i < 6; i++) {
             bristleCalibrationBend[i] = currentBristleBend[i];
         }
@@ -112,6 +123,7 @@ public class BrushSensorPolling : MonoBehaviour
 
     private void applyBendToBristles()
     {
+        //Bends Bristles After all calculations are made
         GameObject bristle;
 
         for (int i = 0; i < 6; i++) {
@@ -129,37 +141,19 @@ public class BrushSensorPolling : MonoBehaviour
             if(bristle == null)
                 Debug.Log("Bristle Not Found!");
             else{
-            float angle = backBend(i);      
-            bristle.transform.localRotation = Quaternion.Euler(new Vector3(0, angle, 0));
-            //bristle.transform.RotateAround(Brush.transform.position, new Vector3(0, 1, 0), angle);
+
+                float angle = backBend(i); 
+            //Rotates around parent pivot location Bristle_XP
+            bristle.transform.parent.localRotation = Quaternion.Euler(new Vector3(0, angle, 0));
+           
             }
-//=======
-
-//            float angle = getBristleAngle(i);
-//            //Debug.Log(i +": Angle " + angle);
-//            if (i % 2 == 1) // we treat even and odd brisles differently, as they are mounted flipped
-//            {
-//                if (angle > bristleNegativeThreshold) // if the bristle is bent in the direction that the sensor is not reacting to
-//                {
-//                    angle = getBristleAngle(i - 1); // just take the value of the neighboring paired bristle
-//                }
-
-//            }
-//            else
-//            {
-//                if (angle < -bristleNegativeThreshold)  // if the bristle is bent in the direction that the sensor is not reacting to
-//                {
-//                    angle = getBristleAngle(i + 1); // just take the value of the neighboring paired bristle
-//                }
-//            }
-
-//            bristle.transform.Translate(2, 0, 0); // transform so that it rotates around the right point
-//            bristle.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle)); // apply rotation
-//            bristle.transform.Translate(-2, 0, 0); // transform back
-//>>>>>>> origin/master
         }
     }
     private float backBend (int bristleID) {
+        //Allows bristle to bend backwards if bend back to a certain degree 
+        //and neighbor bristle is also bending backwards 
+        //Since flex sensors can only read values bending one way
+        //Otherwise bends bristle forward to proper angle based off of flexsensor resistor value
         int neighborID = 0;
         if (bristleID % 2 == 0)
             neighborID = bristleID + 1;
@@ -184,6 +178,8 @@ public class BrushSensorPolling : MonoBehaviour
 
     private void parseArduinoMessage(string dataString)
     {
+        //Remove distinguishing character bit of flexsensor bristle
+        //Take Bending value and apply is to the proper bristle to bend
         char bristleID = dataString[0];
         string degree = dataString.Remove(0, 1);
         int bristleBend = int.Parse(degree);
